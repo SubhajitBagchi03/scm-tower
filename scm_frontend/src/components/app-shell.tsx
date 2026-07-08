@@ -24,36 +24,6 @@ const pageTitles: Record<string, { title: string; subtitle: string }> = {
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const meta = pageTitles[pathname] ?? { title: "SCM Control Tower", subtitle: "" };
-  const [isInitializing, setIsInitializing] = useState(true);
-
-  useEffect(() => {
-    async function initSession() {
-      if (typeof window !== "undefined") {
-        const sessionId = sessionStorage.getItem("scm_session");
-        if (!sessionId) {
-          try {
-            await api.resetSystem();
-            sessionStorage.setItem("scm_session", Date.now().toString());
-            window.location.reload();
-          } catch (e) {
-            console.error("Failed to reset system on new session:", e);
-            setIsInitializing(false);
-          }
-        } else {
-          setIsInitializing(false);
-        }
-      }
-    }
-    initSession();
-  }, []);
-
-  if (isInitializing) {
-    return (
-      <div style={{ display: "flex", height: "100vh", alignItems: "center", justifyContent: "center", background: "var(--bg)", color: "var(--text)", fontFamily: "var(--sans)", fontWeight: 900, fontSize: 24, letterSpacing: "-0.05em", textTransform: "uppercase" }}>
-        Initializing Fresh Session...
-      </div>
-    );
-  }
 
   return (
     <div className="shell">
