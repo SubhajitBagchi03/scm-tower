@@ -5,7 +5,6 @@ sqlalchemy[asyncio]
 aiosqlite
 pydantic
 groq
-sentence-transformers
 chromadb
 PyPDF2
 langchain-text-splitters

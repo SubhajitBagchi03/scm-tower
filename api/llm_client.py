@@ -15,7 +15,7 @@ from functools import lru_cache
 from typing import Optional
 
 from groq import Groq, AsyncGroq
-from sentence_transformers import SentenceTransformer
+from chromadb.utils import embedding_functions
 
 # ── Groq clients ──────────────────────────────────────────────
 # Sync client  → used in non-async contexts (normalization, report PDF)
@@ -28,8 +28,8 @@ MODEL = "openai/gpt-oss-120b"
 # ── Embedding model (loaded once at startup) ──────────────────
 # all-MiniLM-L6-v2: 384-dim, fast, runs on CPU, no internet after first download
 @lru_cache(maxsize=1)
-def _get_embed_model() -> SentenceTransformer:
-    return SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+def _get_embed_model():
+    return embedding_functions.DefaultEmbeddingFunction()
 
 
 # ─────────────────────────────────────────────────────────────
@@ -43,8 +43,8 @@ def get_embedding(text: str) -> list[float]:
     Used by: rag.py for query embedding and document indexing.
     """
     model = _get_embed_model()
-    vec = model.encode(text, show_progress_bar=False)
-    return vec.tolist()
+    vecs = model([text])
+    return vecs[0]
 
 
 def complete(prompt: str, temperature: float = 0.3, max_tokens: int = 4096) -> str:

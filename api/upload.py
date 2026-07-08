@@ -27,17 +27,11 @@ def _get_embedding(text: str) -> list[float]:
     return get_embedding(text)
 
 def get_embeddings_batch(texts: list[str]) -> list[list[float]]:
-    # Optimize batch processing by calling encode directly on the list
     if not texts:
         return []
-    import numpy as np
     model = _get_embed_model()
-    # model.encode supports list of strings and runs much faster
-    vecs = model.encode(texts, show_progress_bar=False)
-    if isinstance(vecs, np.ndarray):
-        return vecs.tolist()
-    elif isinstance(vecs, list) and len(vecs) > 0 and isinstance(vecs[0], np.ndarray):
-        return [v.tolist() for v in vecs]
+    # Chroma's EF takes a list of strings and returns a list of embeddings natively
+    vecs = model(texts)
     return vecs
 
 @router.post("/pdf")
