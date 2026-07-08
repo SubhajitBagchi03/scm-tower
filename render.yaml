@@ -20,7 +20,4 @@ services:
     startCommand: "npm run start"
     envVars:
       - key: NEXT_PUBLIC_API_URL
-        fromService:
-          name: scm-backend
-          type: web
-          property: url
+        sync: false # You will enter the backend URL manually in the dashboard after the backend is created
