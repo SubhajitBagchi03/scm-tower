@@ -27,8 +27,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
-        "https://scm-deployedd.vercel.app",  # replace with actual Vercel URL
-        "https://*.vercel.app",                 # covers all preview deployments too
+        "https://scm-tower.vercel.app",
+        "https://*.vercel.app",
         "https://*.onrender.com"
     ],
     allow_credentials=True,
