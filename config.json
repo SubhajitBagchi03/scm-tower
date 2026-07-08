@@ -1,0 +1,22 @@
+{
+  "_comment": "Supply Chain Control Tower — configurable business rules. Override any value here. All values can also be set as environment variables (uppercase key name).",
+
+  "service_level_z_score":     1.645,
+  "ordering_cost":             50.0,
+  "holding_cost":              5.0,
+  "demand_std_dev_days":       2.0,
+
+  "supplier_weight_cost":        0.30,
+  "supplier_weight_reliability": 0.35,
+  "supplier_weight_speed":       0.20,
+  "supplier_weight_quality":     0.15,
+
+  "supplier_urgent_weight_cost":        0.15,
+  "supplier_urgent_weight_reliability": 0.30,
+  "supplier_urgent_weight_speed":       0.40,
+  "supplier_urgent_weight_quality":     0.15,
+
+  "supplier_low_reliability_threshold": 0.60,
+
+  "conflict_auto_apply_threshold": 0.85
+}

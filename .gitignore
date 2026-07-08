@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.env
+
+# Database
+scm_db.db
+chroma_db/
+
+# Node (Frontend)
+node_modules/
+.next/
+out/
+build/
+.DS_Store
+
+# User Data (Ignored for GitHub)
+data/

@@ -1,0 +1,16 @@
+fastapi
+uvicorn[standard]
+python-dotenv
+sqlalchemy[asyncio]
+aiosqlite
+pydantic
+groq
+sentence-transformers
+chromadb
+PyPDF2
+langchain-text-splitters
+reportlab
+numpy
+httpx
+python-multipart
+pandas
