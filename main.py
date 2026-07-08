@@ -28,7 +28,8 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "https://scm-deployedd.vercel.app",  # replace with actual Vercel URL
-        "https://*.vercel.app"                  # covers all preview deployments too
+        "https://*.vercel.app",                 # covers all preview deployments too
+        "https://*.onrender.com"
     ],
     allow_credentials=True,
     allow_methods=["*"],
