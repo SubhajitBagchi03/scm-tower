@@ -5,6 +5,49 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 
+function GroqConnectionToast() {
+  const [phase, setPhase] = useState<"connecting" | "connected" | "hidden">("connecting");
+  const [hiding, setHiding] = useState(false);
+
+  useEffect(() => {
+    // Show connecting for a moment
+    const connectTimer = setTimeout(() => {
+      setPhase("connected");
+      
+      // Keep connected message for 2.5s, then trigger hiding animation
+      const hideTimer = setTimeout(() => {
+        setHiding(true);
+        // Remove from DOM after animation completes
+        setTimeout(() => setPhase("hidden"), 300);
+      }, 2500);
+      
+      return () => clearTimeout(hideTimer);
+    }, 1500);
+    
+    return () => clearTimeout(connectTimer);
+  }, []);
+
+  if (phase === "hidden") return null;
+
+  return (
+    <div className={`toast-container ${hiding ? "hiding" : ""}`}>
+      {phase === "connecting" ? (
+        <div className="toast-spinner" />
+      ) : (
+        <div className="toast-success">✓</div>
+      )}
+      <div className="toast-content">
+        <div className="toast-title">
+          {phase === "connecting" ? "Connecting to Groq" : "Connected to Groq"}
+        </div>
+        {phase === "connecting" && (
+          <div className="toast-subtitle">AI engine warming up...</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 const navItems = [
   { href: "/dashboard",       label: "Dashboard",       icon: "dashboard" },
   { href: "/uploads",         label: "Uploads",         icon: "upload" },
@@ -64,6 +107,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
         {children}
       </div>
+      <GroqConnectionToast />
     </div>
   );
 }
