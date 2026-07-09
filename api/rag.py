@@ -125,17 +125,15 @@ async def rag_query(payload: QueryRequest):
         documents = results.get("documents", [[]])[0]
         metadatas = results.get("metadatas", [[]])[0]
 
-        is_inv_question = is_inventory_question(question)
+        inventory_keywords = ["inventory", "stock level", "reorder", "quantity in stock", "units in stock"]
+        mentions_inventory = any(kw in question.lower() for kw in inventory_keywords)
 
-        # Include live inventory data only if relevant to the question
+        # Include live inventory data if the question mentions inventory
         inventory_chunks = []
-        if is_inv_question and not payload.use_only_last_document:
+        if mentions_inventory and not payload.use_only_last_document:
             inventory_chunks = await inventory_to_text_chunks()
 
-        # If it's purely an inventory question, we don't need policy PDFs to pollute context
-        if is_inv_question:
-            documents = []
-            metadatas = []
+        # We no longer clear documents! We pass BOTH PDF documents and DB chunks to the LLM.
 
         if not documents and not inventory_chunks:
             return {
@@ -146,7 +144,7 @@ async def rag_query(payload: QueryRequest):
 
         context = "\n\n".join(documents + inventory_chunks)
 
-        prompt = f"""You are a supply chain intelligence assistant. Answer the question below using ONLY the provided context.
+        prompt = f"""You are a supply chain intelligence assistant. Answer the question below using ONLY the provided context, which includes both uploaded policy documents and live database inventory records.
 
 Instructions:
 - Be precise and include specific details (numbers, names, dates)
@@ -173,8 +171,8 @@ Answer:"""
             for doc, meta in zip(documents, metadatas)
         ]
 
-        # Don't show document sources for pure inventory questions
-        show_sources = not is_inventory_question(question)
+        # Show sources if any PDF documents were retrieved
+        show_sources = len(documents) > 0
 
         return {
             "question": question,
