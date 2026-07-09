@@ -37,6 +37,12 @@ class AgentRequest(BaseModel):
     shipment_id: Optional[str] = None
 
 
+class ReportPdfRequest(BaseModel):
+    assessment_result: Optional[str] = None
+    judge_status: Optional[str] = None
+    judge_reasoning: Optional[str] = None
+
+
 class AgentResponse(BaseModel):
     result: Optional[str] = None
     issue: Optional[Dict[str, Any]] = None
@@ -213,6 +219,36 @@ async def download_report_pdf():
         )
 
     report = await _report_ai.create_weekly_report(inventory, shipments, suppliers)
+    pdf_bytes = generate_report_pdf(report)
+    filename = f"scm_report_{report.timestamp.replace(' ', '_').replace(':', '-')}.pdf"
+
+    return StreamingResponse(
+        BytesIO(pdf_bytes),
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )
+
+
+@router.post("/report/pdf_context")
+async def download_report_pdf_context(req: ReportPdfRequest):
+    inventory = await fetch_inventory_from_db()
+    shipments = await fetch_shipments_from_db()
+    suppliers = await fetch_suppliers_from_db()
+
+    if not inventory:
+        raise HTTPException(
+            status_code=400,
+            detail="No inventory data found. Upload an inventory CSV first."
+        )
+
+    report = await _report_ai.create_weekly_report(
+        inventory_data=inventory, 
+        shipment_data=shipments, 
+        supplier_data=suppliers,
+        assessment_result=req.assessment_result,
+        judge_status=req.judge_status,
+        judge_reasoning=req.judge_reasoning
+    )
     pdf_bytes = generate_report_pdf(report)
     filename = f"scm_report_{report.timestamp.replace(' ', '_').replace(':', '-')}.pdf"
 

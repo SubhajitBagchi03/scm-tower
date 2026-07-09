@@ -35,7 +35,9 @@ class ExecutiveReport(BaseModel):
     recommendations: List[str]
     root_causes: List[str]
     forward_projections: List[str]
-
+    assessment_result: Optional[str] = None
+    judge_status: Optional[str] = None
+    judge_reasoning: Optional[str] = None
 
 # ── Report Agent ─────────────────────────────────────────────
 
@@ -185,7 +187,10 @@ Focus on what needs immediate attention and why. Do not use bullet points.
         self,
         inventory_data: List[dict],
         shipment_data: List[dict],
-        supplier_data: List[dict] = None
+        supplier_data: List[dict] = None,
+        assessment_result: str = None,
+        judge_status: str = None,
+        judge_reasoning: str = None
     ) -> ExecutiveReport:
 
         suppliers = supplier_data or []
@@ -268,7 +273,10 @@ Focus on what needs immediate attention and why. Do not use bullet points.
             executive_summary=summary,
             recommendations=recommendations,
             root_causes=root_causes,
-            forward_projections=stockout_warnings
+            forward_projections=stockout_warnings,
+            assessment_result=assessment_result,
+            judge_status=judge_status,
+            judge_reasoning=judge_reasoning
         )
 
 
@@ -372,6 +380,27 @@ def generate_report_pdf(report: ExecutiveReport) -> bytes:
     ]))
     story.append(kpi_table)
     story.append(Spacer(1, 12))
+
+    if report.assessment_result:
+        story.append(Paragraph("Action Assessment Result", section_style))
+        story.append(HRFlowable(
+            width="100%", thickness=0.5,
+            color=colors.HexColor("#cccccc"), spaceAfter=8
+        ))
+        story.append(Paragraph(report.assessment_result, body_style))
+        story.append(Spacer(1, 12))
+
+    if report.judge_status:
+        story.append(Paragraph("Judge Verdict", section_style))
+        story.append(HRFlowable(
+            width="100%", thickness=0.5,
+            color=colors.HexColor("#cccccc"), spaceAfter=8
+        ))
+        story.append(Paragraph(f"<b>Status:</b> {report.judge_status.upper()}", body_style))
+        if report.judge_reasoning:
+            story.append(Spacer(1, 4))
+            story.append(Paragraph(f"<b>Reasoning:</b> {report.judge_reasoning}", body_style))
+        story.append(Spacer(1, 12))
 
     story.append(Paragraph("Executive Summary", section_style))
     story.append(HRFlowable(

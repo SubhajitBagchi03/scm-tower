@@ -83,5 +83,17 @@ export const api = {
     });
   },
 
+  async downloadReportPdfContext(payload: { assessment_result?: string, judge_status?: string, judge_reasoning?: string }): Promise<Blob> {
+    const response = await fetch(`${API_BASE}/agent/report/pdf_context`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to download PDF: ${response.status}`);
+    }
+    return response.blob();
+  },
+
   reportPdfUrl: `${API_BASE}/agent/report/pdf`,
 };

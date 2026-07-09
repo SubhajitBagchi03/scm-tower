@@ -365,6 +365,34 @@ export default function CommandCenterPage() {
   const [result, setResult] = useState<AgentResponse | null>(null);
 
   const selectedDef = ACTIONS.find((a) => a.id === selectedAction)!;
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleDownloadReport = useCallback(async () => {
+    if (!result) return;
+    
+    setIsDownloading(true);
+    try {
+      const payload = {
+        assessment_result: result.result || undefined,
+        judge_status: result.judge_verdict?.is_valid ? "Valid" : "Invalid",
+        judge_reasoning: result.judge_verdict?.reasoning || undefined
+      };
+      
+      const blob = await api.downloadReportPdfContext(payload);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `assessment_report_${new Date().getTime()}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      alert("Failed to download PDF: " + (err as Error).message);
+    } finally {
+      setIsDownloading(false);
+    }
+  }, [result]);
 
   const run = useCallback(async () => {
     setLoading(true);
@@ -576,6 +604,17 @@ export default function CommandCenterPage() {
                   </ul>
                 </div>
               )}
+
+              {/* Download Assessment Report */}
+              <button 
+                className="btn btn-primary" 
+                onClick={() => void handleDownloadReport()}
+                disabled={isDownloading}
+                type="button"
+                style={{ width: "100%", marginTop: 8, justifyContent: "center" }}
+              >
+                {isDownloading ? "Generating PDF..." : "↓ Download Assessment Report as PDF"}
+              </button>
             </>
           )}
         </div>
