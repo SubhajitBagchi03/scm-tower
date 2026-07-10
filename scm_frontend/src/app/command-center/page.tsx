@@ -2,6 +2,8 @@
 
 import { useState, useCallback } from "react";
 import { api } from "@/lib/api";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import type {
   AgentAction, AgentResponse, AgentTrace, JudgeVerdict,
 } from "@/lib/types";
@@ -544,7 +546,9 @@ export default function CommandCenterPage() {
               <div className="card" style={{ gap: 12 }}>
                 <div className="card-label">Assessment Result</div>
                 {result.result && (
-                  <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text)" }}>{result.result}</div>
+                  <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text)" }} className="prose">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{result.result}</ReactMarkdown>
+                  </div>
                 )}
                 {result.reasoning && (
                   <div style={{ fontSize: 13, color: "var(--text2)", lineHeight: 1.7, paddingTop: 8, borderTop: "1px solid var(--border)" }}>
@@ -605,16 +609,18 @@ export default function CommandCenterPage() {
                 </div>
               )}
 
-              {/* Download Assessment Report */}
-              <button 
-                className="btn btn-primary" 
-                onClick={() => void handleDownloadReport()}
-                disabled={isDownloading}
-                type="button"
-                style={{ width: "100%", marginTop: 8, justifyContent: "center" }}
-              >
-                {isDownloading ? "Generating PDF..." : "↓ Download Assessment Report as PDF"}
-              </button>
+              {/* Download Assessment Report - hidden for Ask action */}
+              {selectedAction !== "ask" && (
+                <button 
+                  className="btn btn-primary" 
+                  onClick={() => void handleDownloadReport()}
+                  disabled={isDownloading}
+                  type="button"
+                  style={{ width: "100%", marginTop: 8, justifyContent: "center" }}
+                >
+                  {isDownloading ? "Generating PDF..." : "↓ Download Assessment Report as PDF"}
+                </button>
+              )}
             </>
           )}
         </div>

@@ -2,6 +2,8 @@
 
 import { useState, useCallback } from "react";
 import { api } from "@/lib/api";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import type { RagResponse } from "@/lib/types";
 
 const EXAMPLES = [
@@ -156,7 +158,9 @@ export default function AskPage() {
                     {result.question}
                   </div>
                 )}
-                <div className="prose">{result.answer}</div>
+                <div className="prose">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{result.answer}</ReactMarkdown>
+                </div>
               </div>
 
               {/* Source citations */}
