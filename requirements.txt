@@ -3,6 +3,7 @@ uvicorn[standard]
 python-dotenv
 sqlalchemy[asyncio]
 aiosqlite
+asyncpg
 pydantic
 groq
 chromadb
