@@ -403,11 +403,11 @@ export default function CommandCenterPage() {
     try {
       const res = await api.executeAgent({
         action: selectedAction,
-        product_id: productId || undefined,
-        quantity: quantity || 100,
-        urgency: urgency || "normal",
-        shipment_id: shipmentId || undefined,
-        query: query || undefined,
+        product_id: selectedDef.inputs.includes("product_id") ? (productId || undefined) : undefined,
+        quantity: selectedDef.inputs.includes("quantity") ? (quantity || 100) : 100,
+        urgency: selectedDef.inputs.includes("urgency") ? (urgency || "normal") : "normal",
+        shipment_id: selectedDef.inputs.includes("shipment_id") ? (shipmentId || undefined) : undefined,
+        query: selectedDef.inputs.includes("query") ? (query || undefined) : undefined,
       });
       setResult(res);
     } catch (e) {
@@ -455,7 +455,7 @@ export default function CommandCenterPage() {
                 {selectedDef.inputs.includes("product_id") && (
                   <div className="stack" style={{ gap: 4 }}>
                     <label htmlFor="product_id">Product ID</label>
-                    <input id="product_id" type="text" placeholder="e.g. P020 or leave empty for all"
+                    <input id="product_id" type="text" placeholder="e.g. SKU-001"
                       value={productId} onChange={(e) => setProductId(e.target.value)} />
                   </div>
                 )}

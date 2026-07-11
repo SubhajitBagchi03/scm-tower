@@ -302,7 +302,7 @@ Respond ONLY in valid JSON:
         """Formats all agent step findings for the LLM prompt."""
         lines = []
         for step in context._steps:
-            if step.agent_name in ("judge",):
+            if step.agent_name in ("judge", "report_agent"):
                 continue
             lines.append(
                 f"[{step.agent_name.upper()}] Task: {step.task}\n"
